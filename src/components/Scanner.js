@@ -1,69 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { borderColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 const Scanner = () => {
 
-    const [hasPermission, setHasPermission] = useState(null);
+    const [hasPermission, setHasPermission] = useState();
     const [scanned, setScanned] = useState(false);
     const [useCamera, setUseCamera] = useState(false)
     const [data, setData] = useState()
 
     useEffect(() => {
-      
+
         askForCameraPermission();
 
     }, [])
-    
 
-    const askForCameraPermission = () =>{
+    const askForCameraPermission = () => {
 
         (async () => {
 
-            const {status} =  await BarCodeScanner.requestPermissionsAsync();
+            const { status } = await BarCodeScanner.requestPermissionsAsync();
             setHasPermission(status === 'granted')
 
-        })
+        })()
 
     }
-    
-    /*if(hasPermission === "false"){
 
-        return(
-            <View>
-            <Text>
+    if (hasPermission === false) {
 
-                Please allow permissions
+        return (
 
-            </Text>
+            <View style={styles.container}>
+                <Text>
 
-            <TouchableOpacity
-                style={styles.button}
-                onPress={askForCameraPermission}
-            >
-                <Text>Dar permisos de camara</Text>
-            </TouchableOpacity>
+                    La camara no tiene permisos
+
+                </Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={()=>askForCameraPermission()}
+                >
+                <View>
+                    <Text style={styles.textPermission}>Dar permisos de camara</Text>
+                </View>
+                </TouchableOpacity>
+                
             </View>
 
         )
 
-    */
+    }
 
-    const useCameraOn = () =>{
+    const useCameraOn = () => {
 
         setUseCamera(true)
         setScanned(false)
 
     }
-        
+
     const handleBarCodeScanned = ({ type, data }) => {
 
         if (!scanned) {
 
-            setData(data) 
+            setData(data)
             setScanned(true);
-            setUseCamera(false);           
+            setUseCamera(false);
 
         }
 
@@ -72,16 +73,17 @@ const Scanner = () => {
     return (
         <View style={styles.container}>
             {useCamera ? <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-        /> : <View style={styles.container}>{data && <View style={styles.info}><Text style={styles.text}>{data}</Text></View>}
-        <TouchableOpacity onPress={useCameraOn}>   
-        <View style={styles.button}>
-        <Text style={styles.textButton}>Escanear codigo</Text>
-        </View>
-        </TouchableOpacity>
-        </View>}
-            
+                onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                style={StyleSheet.absoluteFillObject}
+            /> : <View style={styles.container}>{data && <View style={styles.info}><Text style={styles.text}>{data}</Text></View>}
+                <TouchableOpacity onPress={useCameraOn}>
+                    <View style={styles.button}>
+                        <Text style={styles.textButton}>Escanear codigo</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>}
+
+
         </View>
     )
 }
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
     info: {
 
         alignItems: 'center',
-        backgroundColor: '#A1B8D2',
+        backgroundColor: '#6E8094',
         width: 400,
         height: 300,
         borderRadius: 10,
@@ -124,6 +126,14 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'center',
         fontSize: 20,
+        fontWeight: 'bold'
+
+    },
+    textPermission: {
+
+        color: 'white',
+        alignSelf: 'center',
+        fontSize: 15,
         fontWeight: 'bold'
 
     }
